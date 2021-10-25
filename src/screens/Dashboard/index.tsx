@@ -12,6 +12,7 @@ import {
   Icon
 } from './styles';
 import { RFValue } from 'react-native-responsive-fontsize';
+import { HighlightCard } from '../../components/HighlightCard';
 
 export function Dashboard() {
   return (
@@ -30,6 +31,8 @@ export function Dashboard() {
         </UserWrapper>
       </Header>
 
+
+      <HighlightCard/>
     </Container>
   )
 }
