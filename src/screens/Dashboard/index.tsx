@@ -8,8 +8,10 @@ import {
   Photo,
   User,
   UserGreeting,
-  UserName
+  UserName,
+  Icon
 } from './styles';
+import { RFValue } from 'react-native-responsive-fontsize';
 
 export function Dashboard() {
   return (
@@ -23,6 +25,8 @@ export function Dashboard() {
               <UserName>Manoel</UserName>
             </User>
           </UserInfo>
+
+          <Icon name="power"/>
         </UserWrapper>
       </Header>
 
