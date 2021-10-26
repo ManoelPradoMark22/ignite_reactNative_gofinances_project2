@@ -23,15 +23,7 @@ import {
 export function Dashboard() {
   const data = [
     {
-    title: "Desenvolvimento de site",
-    amount: "R$ 12.000,00",
-    category: {
-      name: 'Vendas',
-      icon: 'dollar-sign'
-    },
-    date: "26/10/2021"
-    },
-    {
+      type: 'positive',
       title: "Desenvolvimento de site",
       amount: "R$ 12.000,00",
       category: {
@@ -41,13 +33,24 @@ export function Dashboard() {
       date: "26/10/2021"
     },
     {
-      title: "Desenvolvimento de site",
-      amount: "R$ 12.000,00",
+      type: 'negative',
+      title: "Hamburgueria Pizzy",
+      amount: "R$ 59,00",
       category: {
-        name: 'Vendas',
-        icon: 'dollar-sign'
+        name: 'Alimentação',
+        icon: 'coffee'
       },
-      date: "26/10/2021"
+      date: "20/10/2021"
+    },
+    {
+      type: 'negative',
+      title: "Aluguel do apartamento",
+      amount: "R$ 1.200,00",
+      category: {
+        name: 'Casa',
+        icon: 'shopping-bag'
+      },
+      date: "18/10/2021"
     },
 ];
 
