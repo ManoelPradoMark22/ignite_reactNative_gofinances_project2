@@ -51,6 +51,10 @@ export function Register() {
     console.log(name, amount);
     console.log(data);
   }
+
+  function handleInputChange(text: string) {
+    console.log(text);
+  }
   
   return (
     <Container>
@@ -62,7 +66,7 @@ export function Register() {
         <Fields>
           <Input
             placeholder="Nome"
-            onChangeText={setName}
+            onChangeText={text => handleInputChange(text)}
           />
 
           <Input
