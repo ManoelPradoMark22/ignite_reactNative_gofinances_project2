@@ -7,6 +7,11 @@ type Props = TextInputProps;
 
 export function Input({...rest} : Props){
   return (
-    <Container {...rest} />
+    <Container 
+      style={{
+        textAlignVertical:'center',
+      }}
+      {...rest}
+    />
   )
 }
