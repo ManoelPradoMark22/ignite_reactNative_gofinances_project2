@@ -1,5 +1,12 @@
 import React, { useState } from 'react';
-import { Modal, TouchableWithoutFeedback, Keyboard } from 'react-native';
+import { 
+  Modal, 
+  TouchableWithoutFeedback, 
+  Keyboard,
+  Alert
+} from 'react-native';
+import * as Yup from 'yup';
+
 import { useForm } from 'react-hook-form';
 
 import { InputForm } from '../../components/Form/InputForm';
@@ -8,6 +15,7 @@ import { TransactionTypeButton } from '../../components/Form/TransactionTypeButt
 import { CategorySelectButton } from '../../components/Form/CategorySelectButton';
 
 import { CategorySelect }  from '../CategorySelect';
+import { yupResolver } from '@hookform/resolvers/yup';
 
 import { 
   Container,
@@ -16,13 +24,23 @@ import {
   Form,
   Fields,
   TransactionsTypes
- } from './styles';
+} from './styles';
 
- /*mesmos nomes q esta usando no formulario! */
- interface FormData {
+interface FormData {
   name: string;
   amount: string;
- }
+}
+
+const schema = Yup.object().shape({
+  name: Yup
+  .string()
+  .required('Nome é obrigatório'),
+  amount: Yup
+  .number()
+  .typeError('Informe um valor numérico')
+  .positive('O valor não pode ser negativo')
+  .required('O valor é obrigatório')
+});
 
 export function Register() {
   const [transactionType, setTransactionType] = useState('');
@@ -35,8 +53,11 @@ export function Register() {
 
   const { 
     control,
-    handleSubmit
-  } = useForm();
+    handleSubmit,
+    formState: { errors }
+  } = useForm({
+    resolver: yupResolver(schema)
+  });
 
   function handleTransactionsTypeSelect(type: 'up' | 'down') {
     setTransactionType(type);
@@ -51,6 +72,14 @@ export function Register() {
   }
 
   function handleRegister(form : FormData) {
+    if(!transactionType)
+      return Alert.alert("Selecione o tipo da transação!");
+
+    if(category.key === 'category')
+      return Alert.alert("Selecione a categoria!");
+
+    
+
     const data = {
       name: form.name,
       amount: form.amount,
@@ -76,6 +105,7 @@ export function Register() {
               placeholder="Nome"
               autoCapitalize="sentences"
               autoCorrect={false}
+              error={errors.name && errors.name.message}
             />
 
             <InputForm
@@ -83,6 +113,7 @@ export function Register() {
               control={control}
               placeholder="Preço"
               keyboardType="numeric"
+              error={errors.amount && errors.amount.message}
             />
 
             <TransactionsTypes>
@@ -110,7 +141,7 @@ export function Register() {
           onPress={handleSubmit(handleRegister)}
           />
         </Form>
-
+        
         <Modal visible={categoryModalOpen}>
           <CategorySelect 
             category={category}
