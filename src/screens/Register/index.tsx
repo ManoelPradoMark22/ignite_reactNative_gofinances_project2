@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { 
   Modal, 
   TouchableWithoutFeedback, 
@@ -6,8 +6,10 @@ import {
   Alert
 } from 'react-native';
 import * as Yup from 'yup';
-
+import { yupResolver } from '@hookform/resolvers/yup';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useForm } from 'react-hook-form';
+import uuid from 'react-native-uuid';
 
 import { InputForm } from '../../components/Form/InputForm';
 import { Button } from '../../components/Form/Button';
@@ -15,7 +17,6 @@ import { TransactionTypeButton } from '../../components/Form/TransactionTypeButt
 import { CategorySelectButton } from '../../components/Form/CategorySelectButton';
 
 import { CategorySelect }  from '../CategorySelect';
-import { yupResolver } from '@hookform/resolvers/yup';
 
 import { 
   Container,
@@ -46,6 +47,8 @@ export function Register() {
   const [transactionType, setTransactionType] = useState('');
   const [categoryModalOpen, setCategoryModalOpen] = useState(false);
 
+  const dataKey = '@gofinances:transactions';
+
   const [category, setCategory] = useState({
     key: 'category',
     name: 'Categoria'
@@ -71,21 +74,66 @@ export function Register() {
     setCategoryModalOpen(false);
   }
 
-  function handleRegister(form : FormData) {
+  async function handleRegister(form : FormData) {
     if(!transactionType)
       return Alert.alert("Selecione o tipo da transação!");
 
     if(category.key === 'category')
       return Alert.alert("Selecione a categoria!");
 
-    const data = {
+    const newTransaction = {
+      id: String(uuid.v4()),
       name: form.name,
       amount: form.amount,
       transactionType,
-      category: category.key
+      category: category.key,
+      date: new Date()
     }
-    console.log(data);
+    
+    try {
+      /*await AsyncStorage.setItem(dataKey, JSON.stringify(data));
+      se deixar so assim vai sobreescrever. ai so vai ter um unico item
+      no asyncStorage apenas, sempre o ultimo salvado */
+      const data = await AsyncStorage.getItem(dataKey);
+      const currentData = data ? JSON.parse(data) : [];
+
+      const dataFormatted = [
+        ...currentData,
+        newTransaction
+      ]
+
+      await AsyncStorage.setItem(dataKey, JSON.stringify(dataFormatted));
+
+    } catch (error){
+      console.log(error);
+      Alert.alert("Não foi possível salvar!");
+    }
   }
+
+  useEffect(() => {
+    async function loadData() {
+      const data = await AsyncStorage.getItem(dataKey);
+      console.log(JSON.parse(data!));
+      /*console.log(JSON.parse(data));
+        sem o exclamação acusa erro de tipagem pq o data (como ta recebendo um dado
+          do asyncStorage) pode ser uma string ou null. Ai colocando o ! após
+          a variavel é um recurso do TS para dizer que sempre vai ter algo ali
+          naquela variavel, q nao vai ser nulo. ai PARA DE ACUSAR O ERRO de tipagem)
+      */
+    }
+
+    loadData();
+    
+    /*
+      - PARA EXCLUIR NO ASYNC STORAGE:
+
+        async function removeAll() {
+          await AsyncStorage.removeItem(dataKey);
+        }
+
+        removeAll();
+    */
+  }, [])
 
   return (
     <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
