@@ -9,9 +9,6 @@ const { Navigator, Screen } = createBottomTabNavigator();
 import { Dashboard } from '../screens/Dashboard';
 import { Register } from '../screens/Register';
 
-/*Navigator é o contexto de navegação, que tem as sreens (telas)
-dentro (as opcoes de navegacao) */
-
 export function AppRoutes(){
   const theme = useTheme();
   return(

@@ -91,9 +91,6 @@ export function Register() {
     }
     
     try {
-      /*await AsyncStorage.setItem(dataKey, JSON.stringify(data));
-      se deixar so assim vai sobreescrever. ai so vai ter um unico item
-      no asyncStorage apenas, sempre o ultimo salvado */
       const data = await AsyncStorage.getItem(dataKey);
       const currentData = data ? JSON.parse(data) : [];
 
@@ -114,25 +111,9 @@ export function Register() {
     async function loadData() {
       const data = await AsyncStorage.getItem(dataKey);
       console.log(JSON.parse(data!));
-      /*console.log(JSON.parse(data));
-        sem o exclamação acusa erro de tipagem pq o data (como ta recebendo um dado
-          do asyncStorage) pode ser uma string ou null. Ai colocando o ! após
-          a variavel é um recurso do TS para dizer que sempre vai ter algo ali
-          naquela variavel, q nao vai ser nulo. ai PARA DE ACUSAR O ERRO de tipagem)
-      */
     }
 
     loadData();
-    
-    /*
-      - PARA EXCLUIR NO ASYNC STORAGE:
-
-        async function removeAll() {
-          await AsyncStorage.removeItem(dataKey);
-        }
-
-        removeAll();
-    */
   }, [])
 
   return (
