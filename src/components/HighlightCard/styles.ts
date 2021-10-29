@@ -1,20 +1,22 @@
 import styled, { css } from 'styled-components/native';
 import { RFValue } from 'react-native-responsive-fontsize';
+import { LinearGradient } from 'expo-linear-gradient';
 import { Feather } from '@expo/vector-icons';
+
+interface LinearGradientProps {
+  color1: string;
+  color2: string;
+}
 
 interface TypeProps{
   type: 'up' | 'down' | 'total';
-  typeTotalTransaction?: 'positive' | 'negative' | 'zero';
 }
 
-export const Container = styled.View<TypeProps>`
-  background-color: ${({ theme, type, typeTotalTransaction }) =>
-  type === 'total' 
-  ? (typeTotalTransaction==='negative' && theme.colors.attention ||
-     typeTotalTransaction==='zero' && theme.colors.secondary ||
-     typeTotalTransaction==='positive' && theme.colors.success) 
-  : theme.colors.shape};
-
+export const Container = styled(LinearGradient).attrs( (props : LinearGradientProps) => ({
+  colors: [props.color1, props.color2],
+  start: { x: 1, y: .09},
+  end: { x: 1, y: 1}
+}))<LinearGradientProps>`
   width: ${RFValue(300)}px;
   border-radius: 5px;
 

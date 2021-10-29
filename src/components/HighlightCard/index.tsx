@@ -1,4 +1,6 @@
 import React from 'react';
+import { View } from 'react-native';
+import { useTheme } from 'styled-components';
 
 import { 
   Container,
@@ -31,27 +33,60 @@ export function HighlightCard({
   lastTransaction,
   typeTotalTransaction
 } : Props) {
+  const theme = useTheme();
+
+  function chooseColor1() {
+    if (type==='total') {
+      return theme.colors.primary
+    } else {
+      return theme.colors.shape
+    }
+  }
+
+  function chooseColor2() {
+    if (type==='total') {
+      switch(typeTotalTransaction){
+        case 'negative':
+          return theme.colors.attention;
+          break;
+        case 'zero':
+          return theme.colors.secondary;
+          break;
+        case 'positive':
+          return theme.colors.success;
+          break;   
+        default:
+          return theme.colors.secondary;   
+          break;    
+      }
+    } else {
+      return theme.colors.shape
+    }
+  }
+
   return (
-    <Container type={type} typeTotalTransaction={typeTotalTransaction}>
-      <Header>
-        <Title type={type}>
-          {title}
-        </Title>
-        <Icon 
-          name={icon[type]} 
-          type={type}
-        />
-      </Header>
-      
-      <Footer>
-        <Amount type={type}>
-          {amount}
-        </Amount>
-        <LastTransaction type={type}>
-          {lastTransaction}
-        </LastTransaction>
-      </Footer>
-      
-    </Container>
+    <View>
+      <Container color1={chooseColor1()} color2={chooseColor2()}> 
+        <Header>
+          <Title type={type}>
+            {title}
+          </Title>
+          <Icon 
+            name={icon[type]} 
+            type={type}
+          />
+        </Header>
+        
+        <Footer>
+          <Amount type={type}>
+            {amount}
+          </Amount>
+          <LastTransaction type={type}>
+            {lastTransaction}
+          </LastTransaction>
+        </Footer>
+        
+      </Container>
+    </View>
   )
 }
