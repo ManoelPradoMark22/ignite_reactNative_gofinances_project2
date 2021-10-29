@@ -51,14 +51,39 @@ export function Dashboard() {
     collection : DataListProps[],
     type: 'positive' | 'negative'  
   ){
-    /*Math.max.apply(....) vai retornar a maior transação em numero, mas com o new Date() em volta
-    formatamos para data:*/
     const lastTransaction = new Date(
     Math.max.apply(Math, collection
     .filter(transaction => transaction.type === type)
     .map(transaction => new Date(transaction.date).getTime())));
 
     return `${lastTransaction.getDate()} de ${lastTransaction.toLocaleString('pt-BR', { month: 'long' })}`;
+  }
+
+  function getTotalIntervalTransactionDate(
+    collection : DataListProps[],
+  ){
+    const lastTransaction = new Date(Math.max.apply(Math, collection
+    .map(transaction => new Date(transaction.date).getTime())));
+
+    const lastTransactionFormmated = Intl.DateTimeFormat('pt-BR', {
+      day: '2-digit',
+      month: 'short',
+    }).format(lastTransaction);
+
+    const firstTransaction = new Date(Math.min.apply(Math, collection
+    .map(transaction => new Date(transaction.date).getTime())));
+
+    const firstTransactionFormmated = Intl.DateTimeFormat('pt-BR', {
+      day: '2-digit',
+      month: 'short',
+    }).format(firstTransaction);
+
+    const firstTransactionYear = firstTransaction.getFullYear();
+    const lastTransactionYear = lastTransaction.getFullYear();
+
+    return firstTransactionYear===lastTransactionYear 
+      ? `${firstTransactionFormmated} ~ ${lastTransactionFormmated}`
+      : `${firstTransactionFormmated}. ${firstTransactionYear} ~ ${lastTransactionFormmated}. ${lastTransactionYear}`;
   }
 
   function convertToReal(value: number) {
@@ -109,9 +134,7 @@ export function Dashboard() {
 
     const lastTransactionEntries = getLastTransactionDate(transactions, 'positive');
     const lastTransactionExpensives = getLastTransactionDate(transactions, 'negative');
-    /*totalInterval usando o lastTransactionExpensives só como exemplo,
-    por ser teoricamente mais recorrente*/
-    const totalInterval = `01 a ${lastTransactionExpensives}`;
+    const totalInterval = getTotalIntervalTransactionDate(transactions);
 
     const total = entriesTotal - expensiveTotal;
 
