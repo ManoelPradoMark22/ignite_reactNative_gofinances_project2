@@ -62,16 +62,16 @@ export function Dashboard() {
   function getTotalIntervalTransactionDate(
     collection : DataListProps[],
   ){
-    const lastTransaction = new Date(Math.max.apply(Math, collection
-    .map(transaction => new Date(transaction.date).getTime())));
+    const dateArray = collection.map(transaction => new Date(transaction.date).getTime());
+
+    const lastTransaction = new Date(Math.max.apply(Math, dateArray));
 
     const lastTransactionFormmated = Intl.DateTimeFormat('pt-BR', {
       day: '2-digit',
       month: 'short',
     }).format(lastTransaction);
 
-    const firstTransaction = new Date(Math.min.apply(Math, collection
-    .map(transaction => new Date(transaction.date).getTime())));
+    const firstTransaction = new Date(Math.min.apply(Math, dateArray));
 
     const firstTransactionFormmated = Intl.DateTimeFormat('pt-BR', {
       day: '2-digit',
