@@ -4,11 +4,16 @@ import { Feather } from '@expo/vector-icons';
 
 interface TypeProps{
   type: 'up' | 'down' | 'total';
+  typeTotalTransaction?: 'positive' | 'negative' | 'zero';
 }
 
 export const Container = styled.View<TypeProps>`
-  background-color: ${({ theme, type }) =>
-  type === 'total' ? theme.colors.secondary : theme.colors.shape};
+  background-color: ${({ theme, type, typeTotalTransaction }) =>
+  type === 'total' 
+  ? (typeTotalTransaction==='negative' && theme.colors.attention ||
+     typeTotalTransaction==='zero' && theme.colors.secondary ||
+     typeTotalTransaction==='positive' && theme.colors.success) 
+  : theme.colors.shape};
 
   width: ${RFValue(300)}px;
   border-radius: 5px;

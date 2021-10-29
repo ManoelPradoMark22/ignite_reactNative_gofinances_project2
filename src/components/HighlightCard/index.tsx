@@ -15,6 +15,7 @@ interface Props{
   title: string;
   amount: string;
   lastTransaction: string;
+  typeTotalTransaction?: 'positive' | 'negative' | 'zero';
 }
 
 const icon = {
@@ -27,10 +28,11 @@ export function HighlightCard({
   type,
   title,
   amount,
-  lastTransaction
+  lastTransaction,
+  typeTotalTransaction
 } : Props) {
   return (
-    <Container type={type}>
+    <Container type={type} typeTotalTransaction={typeTotalTransaction}>
       <Header>
         <Title type={type}>
           {title}

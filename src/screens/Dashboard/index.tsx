@@ -33,6 +33,7 @@ export interface DataListProps extends TransactionCardProps {
 interface HighlightProps {
   amount: string;
   lastTransaction: string;
+  typeTotalTransaction?: 'positive' | 'negative' | 'zero';
 }
 
 interface HighlightData {
@@ -51,12 +52,14 @@ export function Dashboard() {
     collection : DataListProps[],
     type: 'positive' | 'negative'  
   ){
-    const lastTransaction = new Date(
-    Math.max.apply(Math, collection
+    const dataArray = collection
     .filter(transaction => transaction.type === type)
-    .map(transaction => new Date(transaction.date).getTime())));
+    .map(transaction => new Date(transaction.date).getTime());
+    
+    const lastTransaction = new Date(
+    Math.max.apply(Math, dataArray));
 
-    return `${lastTransaction.getDate()} de ${lastTransaction.toLocaleString('pt-BR', { month: 'long' })}`;
+    return dataArray.length===0 ? '' : `${type==='positive' ? 'Última entrada dia ' : 'Última saída dia '} ${lastTransaction.getDate()} de ${lastTransaction.toLocaleString('pt-BR', { month: 'long' })}`;
   }
 
   function getTotalIntervalTransactionDate(
@@ -93,6 +96,16 @@ export function Dashboard() {
     });
 
     return string.replace('R$', 'R$ ');
+  }
+
+  function totalTransactionsType(value : number){
+    if (value<0) {
+      return 'negative';
+    } else if (value===0) {
+      return 'zero';
+    } else {
+      return 'positive';
+    }
   }
 
   async function loadTransactions(){
@@ -132,24 +145,27 @@ export function Dashboard() {
 
     setTransactions(transactionsFormatted);
 
-    const lastTransactionEntries = getLastTransactionDate(transactions, 'positive');
-    const lastTransactionExpensives = getLastTransactionDate(transactions, 'negative');
-    const totalInterval = getTotalIntervalTransactionDate(transactions);
+    const lengthArray = transactions.length;
+
+    const lastTransactionEntries = lengthArray===0 ? '' : getLastTransactionDate(transactions, 'positive');
+    const lastTransactionExpensives = lengthArray===0 ? '' : getLastTransactionDate(transactions, 'negative');
+    const totalInterval = lengthArray===0 ? '' : getTotalIntervalTransactionDate(transactions);
 
     const total = entriesTotal - expensiveTotal;
 
     setHighlightData({
       entries: {
         amount: convertToReal(entriesTotal),
-        lastTransaction: `Última entrada dia ${lastTransactionEntries}`,
+        lastTransaction: lastTransactionEntries,
       },
       expensives: {
         amount: convertToReal(expensiveTotal),
-        lastTransaction: `Última saída dia ${lastTransactionExpensives}`,
+        lastTransaction: lastTransactionExpensives,
       },
       total: {
         amount: convertToReal(total),
         lastTransaction: totalInterval,
+        typeTotalTransaction: totalTransactionsType(total),
       }
     });
 
@@ -209,6 +225,7 @@ export function Dashboard() {
               title="Total"
               amount={highlightData.total.amount}
               lastTransaction={highlightData.total.lastTransaction}
+              typeTotalTransaction={highlightData.total.typeTotalTransaction}
             />
           </HighLightCards>
 
