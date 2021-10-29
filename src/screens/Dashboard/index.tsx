@@ -8,6 +8,8 @@ import { useFocusEffect } from '@react-navigation/native';
 import { HighlightCard } from '../../components/HighlightCard';
 import { TransactionCard, TransactionCardProps } from '../../components/TransactionCard';
 
+import emptyListImage from '../../assets/opps.png';
+
 import {
   Container,
   Header,
@@ -23,7 +25,9 @@ import {
   Title,
   TransactionList,
   LogoutButton,
-  LoadContainer
+  LoadContainer,
+  ImageContainer,
+  ImageEmpty
 } from './styles';
 
 export interface DataListProps extends TransactionCardProps {
@@ -236,6 +240,10 @@ export function Dashboard() {
               data={transactions}
               keyExtractor={item => item.id}
               renderItem={({ item }) => <TransactionCard data={item} />}
+              ListEmptyComponent={
+                <ImageContainer>
+                  <ImageEmpty source={emptyListImage}/>
+                </ImageContainer>}
             />
           </Transactions>
         </>

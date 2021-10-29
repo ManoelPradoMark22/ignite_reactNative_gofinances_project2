@@ -7,6 +7,10 @@ import { BorderlessButton } from 'react-native-gesture-handler';
 
 import { DataListProps } from '.'
 
+interface ImageEmptyProps {
+  source: string;
+}
+
 export const Container = styled.View`
   flex: 1;
   background-color: ${({ theme }) => theme.colors.background};
@@ -111,4 +115,14 @@ export const LoadContainer = styled.View`
   flex: 1;
   justify-content: center;
   align-items: center;
+`;
+
+export const ImageContainer = styled.View`
+  align-items: center;
+  justify-content: center;
+`;
+
+export const ImageEmpty = styled.Image<ImageEmptyProps>`
+  width: 300px;
+  height: 236px;
 `;
