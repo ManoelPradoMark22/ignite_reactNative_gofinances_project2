@@ -79,18 +79,19 @@ export function HighlightCard({
         </Header>
         
         <Footer>
-          <TextTicker
-            style={{ marginTop: 38 }}
-            duration={5000}
-            loop
-            bounce
-            repeatSpacer={50}
-            marqueeDelay={1000}
-          >
-            <Amount type={type}>
-              {amount}
-            </Amount>
-          </TextTicker>
+          <View style={{ marginTop: 38 }}>
+            <TextTicker
+              duration={5000}
+              loop
+              bounce
+              repeatSpacer={50}
+              marqueeDelay={1000}
+            >
+              <Amount type={type}>
+                {amount}
+              </Amount>
+            </TextTicker>
+          </View>
           <LastTransaction type={type}>
             {lastTransaction}
           </LastTransaction>
