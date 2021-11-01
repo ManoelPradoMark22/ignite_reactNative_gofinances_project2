@@ -12,6 +12,8 @@ import {
   LastTransaction
 } from './styles';
 
+import { ScroolHorizontalText } from '../../global/ComponentsStyled';
+
 interface Props{
   type: 'up' | 'down' | 'total';
   title: string;
@@ -78,9 +80,11 @@ export function HighlightCard({
         </Header>
         
         <Footer>
-          <Amount type={type}>
-            {amount}
-          </Amount>
+          <ScroolHorizontalText style={{marginTop: 38}}>
+            <Amount type={type}>
+              {amount}
+            </Amount>
+          </ScroolHorizontalText>
           <LastTransaction type={type}>
             {lastTransaction}
           </LastTransaction>
