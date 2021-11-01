@@ -1,6 +1,7 @@
 import React from 'react';
 import { View } from 'react-native';
 import { useTheme } from 'styled-components';
+import TextTicker from 'react-native-text-ticker';
 
 import { 
   Container,
@@ -11,8 +12,6 @@ import {
   Amount,
   LastTransaction
 } from './styles';
-
-import { ScroolHorizontalText } from '../../global/ComponentsStyled';
 
 interface Props{
   type: 'up' | 'down' | 'total';
@@ -80,11 +79,18 @@ export function HighlightCard({
         </Header>
         
         <Footer>
-          <ScroolHorizontalText style={{marginTop: 38}}>
+          <TextTicker
+            style={{ marginTop: 38 }}
+            duration={5000}
+            loop
+            bounce
+            repeatSpacer={50}
+            marqueeDelay={1000}
+          >
             <Amount type={type}>
               {amount}
             </Amount>
-          </ScroolHorizontalText>
+          </TextTicker>
           <LastTransaction type={type}>
             {lastTransaction}
           </LastTransaction>
