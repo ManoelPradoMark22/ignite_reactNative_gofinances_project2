@@ -56,7 +56,7 @@ export function Dashboard() {
     collection : DataListProps[],
     type: 'positive' | 'negative'  
   ){
-    const todayDate = (new Date()).getFullYear();
+    const todayDateYear = (new Date()).getFullYear();
 
     const dataArray = collection
     .filter(transaction => transaction.type === type)
@@ -65,7 +65,9 @@ export function Dashboard() {
     const lastTransaction = new Date(
     Math.max.apply(Math, dataArray));
 
-    return dataArray.length===0 ? '' : `${type==='positive' ? 'Última entrada dia ' : 'Última saída dia '} ${lastTransaction.getDate()} de ${todayDate === lastTransaction.getFullYear() ? lastTransaction.toLocaleString('pt-BR', { month: 'long' }) : lastTransaction.toLocaleString('pt-BR', { month: 'short' })+' de '+ todayDate}`;
+    const lastTransactionYear = lastTransaction.getFullYear();
+
+    return dataArray.length===0 ? '' : `${type==='positive' ? 'Última entrada dia ' : 'Última saída dia '} ${lastTransaction.getDate()} de ${todayDateYear === lastTransactionYear ? lastTransaction.toLocaleString('pt-BR', { month: 'long' }) : lastTransaction.toLocaleString('pt-BR', { month: 'short' })+' de '+ lastTransactionYear}`;
   }
 
   function getTotalIntervalTransactionDate(
