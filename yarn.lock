@@ -5207,10 +5207,9 @@ react-native-screens@~3.4.0:
   dependencies:
     warn-once "^0.1.0"
 
-react-native-text-ticker@^1.14.0:
+react-native-text-ticker@ManoelPradoMark22/react-native-text-ticker:
   version "1.14.0"
-  resolved "https://registry.yarnpkg.com/react-native-text-ticker/-/react-native-text-ticker-1.14.0.tgz#dc537d2c587efc18ef19db9a85dc678a28aa8c57"
-  integrity sha512-8TNGTcW43dfnCqIuXVA7F1Ny8SKGrw0pIrNS5nM7eda+6AsuPTZh3JQ2CwmSRYfsrlnS4QFrpyo5ykpI8nvtCw==
+  resolved "https://codeload.github.com/ManoelPradoMark22/react-native-text-ticker/tar.gz/a6c25f5e0dae0eead6e375fae606ed04f32db0d5"
 
 react-native-unimodules@0.14.10:
   version "0.14.10"
