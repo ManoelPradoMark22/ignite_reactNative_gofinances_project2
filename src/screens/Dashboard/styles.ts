@@ -81,7 +81,7 @@ export const Icon = styled(Feather)`
 export const HighLightCards = styled(ScrollView).attrs({
   horizontal: true,
   showsHorizontalScrollIndicator: false,
-  contentContainerStyle: { paddingLeft: 24, paddingRight: 8 }
+  contentContainerStyle: { paddingLeft: 24, paddingRight: 8, alignItems: 'center' }
 })`
   width: 100%;
 
