@@ -23,6 +23,7 @@ export const Container = styled(LinearGradient).attrs( (props : LinearGradientPr
   padding: 19px 23px;
   padding-bottom: ${RFValue(42)}px;
   margin-right: 16px;
+  height: 100%;
 `;
 
 export const Header = styled.View`
