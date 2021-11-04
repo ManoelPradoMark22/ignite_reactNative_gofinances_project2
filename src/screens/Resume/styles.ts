@@ -6,6 +6,12 @@ export const Container = styled.View`
   background-color: ${({ theme }) => theme.colors.background};
 `;
 
+export const LoadContainer = styled.View`
+  flex: 1;
+  justify-content: center;
+  align-items: center;
+`;
+
 export const Header = styled.View`
   background-color: ${({ theme }) => theme.colors.primary};
 
@@ -22,3 +28,10 @@ export const Title = styled.Text`
   font-size: ${RFValue(18)}px;
   color: ${({ theme }) => theme.colors.shape};
 `;
+
+export const Content = styled.ScrollView.attrs({
+  contentContainerStyle: { 
+    flex: 1,
+    padding: 24
+  }
+})``;
