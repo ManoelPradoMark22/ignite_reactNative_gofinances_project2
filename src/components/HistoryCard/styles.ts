@@ -25,9 +25,11 @@ export const Container = styled.View<ContainerProps>`
 export const Title = styled.Text`
   font-family: ${({ theme }) => theme.fonts.regular};
   font-size: ${RFValue(15)}px;
+  margin-right: 5px;
 `;
 
 export const Amount = styled.Text`
+  flex: 1;
   font-family: ${({ theme }) => theme.fonts.bold};
   font-size: ${RFValue(15)}px;
 `;
