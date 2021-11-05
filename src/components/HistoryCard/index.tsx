@@ -5,6 +5,7 @@ import TextTicker from 'react-native-text-ticker';
 import { 
   Container,
   PercentBox,
+  PercentFlexBox,
   Percent,
   Content,
   Title,
@@ -28,11 +29,11 @@ export function HistoryCard({
   percent
 } : Props) {
   return (
-    <Container color={color}>
-      <PercentBox color={color} style={{alignItems: 'center'}}>
-        <View style={{flex: 1 , alignItems: 'center', justifyContent: 'center'}}>
+    <Container>
+      <PercentBox color={color}>
+        <PercentFlexBox>
           <Percent>{percent}</Percent>
-        </View>
+        </PercentFlexBox>
       </PercentBox>
       <Content>
         <View style={{ flex: 1 }}>

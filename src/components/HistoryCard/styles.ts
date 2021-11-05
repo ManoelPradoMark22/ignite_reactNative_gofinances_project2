@@ -5,7 +5,7 @@ interface ColorProps {
   color: string;
 }
 
-export const Container = styled.View<ColorProps>`
+export const Container = styled.View`
   width: 100%;
 
   background-color: ${({ theme }) => theme.colors.shape};
@@ -21,16 +21,20 @@ export const Container = styled.View<ColorProps>`
 
 export const PercentBox = styled.View<ColorProps>`
   background-color: ${({ color }) => color};
-  height: 100%;
   min-width: 40px;
   margin-right: 5px;
   border-top-left-radius: 5px;
   border-bottom-left-radius: 5px;
 `;
 
+export const PercentFlexBox = styled.View`
+  flex: 1;
+  align-items: center;
+  justify-content: center;
+`;
+
 export const Percent = styled.Text`
   color: ${({ theme }) => theme.colors.shape};
-
 `;
 
 export const Content = styled.View`
