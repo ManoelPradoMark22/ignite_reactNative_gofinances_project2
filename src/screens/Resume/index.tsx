@@ -161,16 +161,14 @@ export function Resume() {
               data={totalByCategories}
               colorScale={totalByCategories.map(category => category.color)}
               style={{
-                    labels: {
-                      fontSize: RFValue(18),
-                      fontWeight: 'bold',
-                      fill: theme.colors.shape
-                    }
-                  }}
-                  labelRadius={50}
-                  x="percent"
-                  y="total"
-                />
+                labels: {
+                  fill: 'transparent'
+                }
+              }}
+              labelRadius={50}
+              x="percent"
+              y="total"
+            />
           </ChartContainer>
 
           {
