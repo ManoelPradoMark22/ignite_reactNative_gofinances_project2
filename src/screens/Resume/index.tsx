@@ -1,10 +1,10 @@
-import React, { useEffect, useState, useCallback } from 'react';
-import { ActivityIndicator } from 'react-native';
+import React, { useState, useCallback } from 'react';
+import { ActivityIndicator, Alert } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useFocusEffect } from '@react-navigation/native';
 import { VictoryPie } from 'victory-native';
 import { RFValue } from 'react-native-responsive-fontsize';
-import { addMonths, subMonths, format } from 'date-fns';
+import { addMonths, subMonths, format, differenceInMonths } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
 
 import { useBottomTabBarHeight } from '@react-navigation/bottom-tabs';
@@ -52,9 +52,12 @@ export function Resume() {
 
   const theme = useTheme();
 
-  function handleDateChange(action: 'next' | `prev` ) {
+  function handleDateChange(action: 'next' | 'prev' ) {
     if (action === 'next') {
-      setSelectedDate(addMonths(selectedDate, 1));
+      const nextMonth = addMonths(selectedDate, 1);
+      differenceInMonths(nextMonth, new Date()) > 0 ?
+      Alert.alert('Limite atingido') :
+      setSelectedDate(nextMonth);
     }else {
       setSelectedDate(subMonths(selectedDate, 1));
     }
