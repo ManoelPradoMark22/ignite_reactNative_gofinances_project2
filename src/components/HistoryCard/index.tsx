@@ -24,9 +24,11 @@ export function HistoryCard({
 } : Props) {
   return (
     <Container color={color}>
-      <ScroolHorizontalText style={{ flex: 1 }}>
-        <Title>{title}</Title>
-      </ScroolHorizontalText>
+      <View style={{ maxWidth: '50%' }}>
+        <ScroolHorizontalText style={{ flex: 1 }}>
+          <Title>{title}</Title>
+        </ScroolHorizontalText>
+      </View>
       <BoxAmount>
         <TextTicker
           duration={5000}
