@@ -24,8 +24,8 @@ export function HistoryCard({
 } : Props) {
   return (
     <Container color={color}>
-      <View style={{ maxWidth: '50%' }}>
-        <ScroolHorizontalText style={{ flex: 1 }}>
+      <View style={{ flex: 1 }}>
+        <ScroolHorizontalText>
           <Title>{title}</Title>
         </ScroolHorizontalText>
       </View>

@@ -30,7 +30,7 @@ export const Title = styled.Text`
 export const BoxAmount = styled.View`
   flex: 1;
   flex-direction: row-reverse;
-  margin-right: 5px; //right because we are using row-reverse
+  margin-right: 5px; //right because we are using row-reverse;
 `;
 
 export const Amount = styled.Text`
