@@ -5,7 +5,7 @@ interface ColorProps {
   color: string;
 }
 
-export const Container = styled.View`
+export const Container = styled.View<ColorProps>`
   width: 100%;
 
   background-color: ${({ theme }) => theme.colors.shape};
@@ -15,6 +15,8 @@ export const Container = styled.View`
   justify-content: space-between;
 
   border-radius: 5px;
+  border-right-width: 5px;
+  border-right-color: ${({ color }) => color};
 
   margin-bottom: 8px;
 `;

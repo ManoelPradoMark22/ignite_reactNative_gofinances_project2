@@ -29,7 +29,7 @@ export function HistoryCard({
   percent
 } : Props) {
   return (
-    <Container>
+    <Container color={color}>
       <PercentBox color={color}>
         <PercentFlexBox>
           <Percent>{percent}</Percent>
