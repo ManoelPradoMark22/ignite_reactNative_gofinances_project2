@@ -65,7 +65,11 @@ export function Resume() {
     const responseFormatted = response ? JSON.parse(response) : [];
 
     const expensives = responseFormatted
-    .filter((expensive : TransactionData) => expensive.type === 'negative');
+    .filter((expensive : TransactionData) => 
+      expensive.type === 'negative' &&
+      new Date(expensive.date).getMonth() === selectedDate.getMonth() &&
+      new Date(expensive.date).getFullYear() === selectedDate.getFullYear()
+    );
 
     const expensiveTotal = expensives
     .reduce((acumullator : number, expensive : TransactionData) => {
@@ -109,7 +113,7 @@ export function Resume() {
 
   useEffect(() => {
     loadData();
-  }, [])
+  }, [selectedDate])
 
   return (
     <Container>
