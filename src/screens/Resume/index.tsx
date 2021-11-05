@@ -100,7 +100,8 @@ export function Resume() {
           currency: 'BRL'
         });
 
-        const percent = `${(categorySum/expensiveTotal *100).toFixed(0)}%`;
+        const numPercent = categorySum/expensiveTotal *100;
+        const percent = `${numPercent < 1 ? numPercent.toFixed(2) : numPercent.toFixed(0)}%`;
 
         totalByCategory.push({
           key: category.key,

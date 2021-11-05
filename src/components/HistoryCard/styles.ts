@@ -23,7 +23,7 @@ export const Container = styled.View<ColorProps>`
 
 export const PercentBox = styled.View<ColorProps>`
   background-color: ${({ color }) => color};
-  min-width: 40px;
+  min-width: 42px;
   margin-right: 5px;
   border-top-left-radius: 5px;
   border-bottom-left-radius: 5px;
