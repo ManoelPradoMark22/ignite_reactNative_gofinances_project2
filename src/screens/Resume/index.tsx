@@ -4,7 +4,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useFocusEffect } from '@react-navigation/native';
 import { VictoryPie } from 'victory-native';
 import { RFValue } from 'react-native-responsive-fontsize';
-import { addMonths, subMonths, format, differenceInMonths } from 'date-fns';
+import { addMonths, subMonths, format } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
 
 import { useBottomTabBarHeight } from '@react-navigation/bottom-tabs';
@@ -54,10 +54,12 @@ export function Resume() {
 
   function handleDateChange(action: 'next' | 'prev' ) {
     if (action === 'next') {
-      const nextMonth = addMonths(selectedDate, 1);
-      differenceInMonths(nextMonth, new Date()) > 0 ?
-      Alert.alert('Limite atingido') :
-      setSelectedDate(nextMonth);
+      const today = new Date();
+
+      (today.getMonth()===selectedDate.getMonth() && 
+      today.getFullYear()===selectedDate.getFullYear()) ?
+      Alert.alert('Meses futuros indisponíveis') :
+      setSelectedDate(addMonths(selectedDate, 1));
     }else {
       setSelectedDate(subMonths(selectedDate, 1));
     }
