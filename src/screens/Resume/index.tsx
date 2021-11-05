@@ -3,7 +3,6 @@ import { ActivityIndicator, Alert } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useFocusEffect } from '@react-navigation/native';
 import { VictoryPie } from 'victory-native';
-import { RFValue } from 'react-native-responsive-fontsize';
 import { addMonths, subMonths, format } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
 
@@ -178,6 +177,7 @@ export function Resume() {
                 title={item.name}
                 amount={item.totalFormatted}
                 color={item.color}
+                percent={item.percent}
               />
             ))
           }

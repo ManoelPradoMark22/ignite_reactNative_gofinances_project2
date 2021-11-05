@@ -1,25 +1,43 @@
 import styled from 'styled-components/native';
 import { RFValue } from 'react-native-responsive-fontsize';
 
-interface ContainerProps {
+interface ColorProps {
   color: string;
 }
 
-export const Container = styled.View<ContainerProps>`
+export const Container = styled.View<ColorProps>`
   width: 100%;
 
   background-color: ${({ theme }) => theme.colors.shape};
 
   flex-direction: row;
+  align-items: center;
   justify-content: space-between;
 
-  padding: 13px 24px;
-
   border-radius: 5px;
-  border-left-width: 5px;
-  border-left-color: ${({ color }) => color};
 
   margin-bottom: 8px;
+`;
+
+export const PercentBox = styled.View<ColorProps>`
+  background-color: ${({ color }) => color};
+  height: 100%;
+  min-width: 40px;
+  margin-right: 5px;
+  border-top-left-radius: 5px;
+  border-bottom-left-radius: 5px;
+`;
+
+export const Percent = styled.Text`
+  color: ${({ theme }) => theme.colors.shape};
+
+`;
+
+export const Content = styled.View`
+flex: 1;
+  flex-direction: row;
+  padding: 13px 0;
+  padding-right: 24px;
 `;
 
 export const Title = styled.Text`
@@ -30,7 +48,7 @@ export const Title = styled.Text`
 export const BoxAmount = styled.View`
   flex: 1;
   flex-direction: row-reverse;
-  margin-right: 5px; //right because we are using row-reverse;
+  margin-right: 5px;
 `;
 
 export const Amount = styled.Text`
