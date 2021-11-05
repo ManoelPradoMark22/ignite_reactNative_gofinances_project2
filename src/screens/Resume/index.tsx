@@ -1,6 +1,7 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useCallback } from 'react';
 import { ActivityIndicator } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { useFocusEffect } from '@react-navigation/native';
 import { VictoryPie } from 'victory-native';
 import { RFValue } from 'react-native-responsive-fontsize';
 import { addMonths, subMonths, format } from 'date-fns';
@@ -115,6 +116,10 @@ export function Resume() {
   useEffect(() => {
     loadData();
   }, [selectedDate])
+
+  useFocusEffect(useCallback(() => {
+    loadData();
+  },[]));
 
   return (
     <Container>
