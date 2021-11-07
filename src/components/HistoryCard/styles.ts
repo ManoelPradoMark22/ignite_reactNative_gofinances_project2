@@ -40,8 +40,10 @@ export const Percent = styled.Text`
 `;
 
 export const Content = styled.View`
-flex: 1;
+  flex: 1;
   flex-direction: row;
+  justify-content: center;
+  
   padding: 13px 0;
   padding-right: 24px;
 `;

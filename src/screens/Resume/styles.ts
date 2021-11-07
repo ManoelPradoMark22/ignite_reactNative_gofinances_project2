@@ -3,6 +3,10 @@ import { RFValue } from 'react-native-responsive-fontsize';
 import { BorderlessButton } from 'react-native-gesture-handler';
 import { Feather } from '@expo/vector-icons';
 
+interface ImageEmptyProps {
+  source: string;
+}
+
 export const Container = styled.View`
   flex: 1;
   background-color: ${({ theme }) => theme.colors.background};
@@ -59,4 +63,26 @@ export const MonthSelectIcon = styled(Feather)`
 export const Month = styled.Text`
   font-family: ${({ theme }) => theme.fonts.regular};
   font-size: ${RFValue(20)}px;
+`;
+
+export const TransactionsTypes = styled.View`
+  flex-direction: row;
+  justify-content: space-between;
+
+  margin-top: 8px;
+  margin-bottom: 16px;
+`;
+
+export const ImageContainer = styled.View`
+  align-items: center;
+  justify-content: center;
+`;
+
+export const ImageEmpty = styled.Image<ImageEmptyProps>`
+  width: 300px;
+  height: 236px;
+`;
+
+export const TextEmpty = styled.Text`
+  font-family: ${({ theme }) => theme.fonts.regular};
 `;

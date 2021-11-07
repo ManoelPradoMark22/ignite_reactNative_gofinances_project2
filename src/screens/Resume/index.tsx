@@ -1,5 +1,5 @@
 import React, { useState, useCallback } from 'react';
-import { ActivityIndicator, Alert } from 'react-native';
+import { ActivityIndicator, Alert, Text } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useFocusEffect } from '@react-navigation/native';
 import { VictoryPie } from 'victory-native';
@@ -10,6 +10,9 @@ import { useBottomTabBarHeight } from '@react-navigation/bottom-tabs';
 import { useTheme } from 'styled-components';
 
 import { HistoryCard } from '../../components/HistoryCard';
+import { TransactionTypeButton } from '../../components/Form/TransactionTypeButton';
+
+import emptyListImage from '../../assets/opps.png';
 
 import {
   Container,
@@ -21,7 +24,11 @@ import {
   MonthSelect,
   MonthSelectButton,
   MonthSelectIcon,
-  Month
+  Month,
+  TransactionsTypes,
+  ImageContainer,
+  ImageEmpty,
+  TextEmpty
 } from './styles';
 
 import { categories } from '../../utils/categories';
@@ -46,6 +53,7 @@ interface CategoryData {
 export function Resume() {
   
   const [isLoading, setIsLoading] = useState(false);
+  const [transactionType, setTransactionType] = useState('negative');
   const [selectedDate, setSelectedDate] = useState(new Date());
   const [totalByCategories, setTotalByCategories] = useState<CategoryData[]>([]);
 
@@ -64,6 +72,10 @@ export function Resume() {
     }
   }
 
+  function handleTransactionsTypeSelect(type: 'positive' | 'negative') {
+    setTransactionType(type);
+  }
+
   async function loadData() {
     setIsLoading(true);
     const dataKey = '@gofinances:transactions';
@@ -72,7 +84,7 @@ export function Resume() {
 
     const expensives = responseFormatted
     .filter((expensive : TransactionData) => 
-      expensive.type === 'negative' &&
+      expensive.type === transactionType &&
       new Date(expensive.date).getMonth() === selectedDate.getMonth() &&
       new Date(expensive.date).getFullYear() === selectedDate.getFullYear()
     );
@@ -120,7 +132,7 @@ export function Resume() {
 
   useFocusEffect(useCallback(() => {
     loadData();
-  },[selectedDate]));
+  },[selectedDate, transactionType]));
 
   return (
     <Container>
@@ -156,31 +168,54 @@ export function Resume() {
             </MonthSelectButton>
           </MonthSelect>
 
-          <ChartContainer>
-            <VictoryPie
-              data={totalByCategories}
-              colorScale={totalByCategories.map(category => category.color)}
-              style={{
-                labels: {
-                  fill: 'transparent'
-                }
-              }}
-              labelRadius={50}
-              x="percent"
-              y="total"
+          <TransactionsTypes>
+            <TransactionTypeButton
+              type="up"
+              title="Entrada"
+              onPress={() => handleTransactionsTypeSelect('positive')}
+              isActive={transactionType === 'positive'}
             />
-          </ChartContainer>
+            <TransactionTypeButton
+              type="down"
+              title="Saída"
+              onPress={() => handleTransactionsTypeSelect('negative')}
+              isActive={transactionType === 'negative'}
+            />
+          </TransactionsTypes>
 
-          {
-            totalByCategories.map(item => (
-              <HistoryCard
-                key={item.key}
-                title={item.name}
-                amount={item.totalFormatted}
-                color={item.color}
-                percent={item.percent}
+          {totalByCategories.length > 0 ? 
+          <>
+            <ChartContainer>
+              <VictoryPie
+                data={totalByCategories}
+                colorScale={totalByCategories.map(category => category.color)}
+                style={{
+                  labels: {
+                    fill: 'transparent'
+                  }
+                }}
+                labelRadius={50}
+                x="percent"
+                y="total"
               />
-            ))
+            </ChartContainer>
+
+            {
+              totalByCategories.map(item => (
+                <HistoryCard
+                  key={item.key}
+                  title={item.name}
+                  amount={item.totalFormatted}
+                  color={item.color}
+                  percent={item.percent}
+                />
+              ))
+            }
+            </> :
+            <ImageContainer>
+              <ImageEmpty source={emptyListImage}/>
+              <TextEmpty>{transactionType==='negative' ? 'Nenhuma saída cadastrada' : 'Nenhuma entrada cadastrada'}</TextEmpty>
+            </ImageContainer>
           }
         </Content>
       }
