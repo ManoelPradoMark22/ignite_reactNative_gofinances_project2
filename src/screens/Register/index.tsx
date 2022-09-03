@@ -20,6 +20,8 @@ import { CategorySelectButton } from '../../components/Form/CategorySelectButton
 
 import { CategorySelect }  from '../CategorySelect';
 
+import api from '../../services/api'
+
 import { 
   Container,
   Header,
@@ -41,7 +43,7 @@ interface NavigationProps {
 const schema = Yup.object().shape({
   name: Yup
   .string()
-  .required('Nome é obrigatório'),
+  .required('Descrição é obrigatória'),
   amount: Yup
   .number()
   .typeError('Informe um valor numérico')
@@ -88,6 +90,73 @@ export function Register() {
     if(category.key === 'category')
       return Alert.alert("Selecione a categoria!");
 
+
+    console.log(transactionType)
+    
+    const newTransaction = {
+      keyCategory: category.key,
+      description: form.name,
+      amount: form.amount,
+      type: transactionType
+    }
+    
+    try {
+      const response = await api.post(
+        '/statement', 
+        newTransaction,
+        {
+          headers: {
+            "cpf": "06350390520"
+          }
+        }
+      )
+      /*
+      const response = await api.get(
+        '/all-statements'
+      );
+      */
+      /* 
+      const response = await fetch(`${baseUrl}/statement`, {
+        method: 'POST',
+        mode: 'no-cors',
+        body: JSON.stringify(newTransaction),
+        headers: {
+          'Content-type': 'application/json; charset=UTF-8'
+        }
+      }).then(res => {
+        console.log(res);
+        return res;
+      })
+      */
+
+      Alert.alert(`${response.data.message}(${response.data.httpStatusCode})`);
+
+      /*Resetando os campos após o cadastro:*/
+      reset();
+      setTransactionType('');
+      setCategory({
+        key: 'category',
+        name: 'Categoria'
+      });
+
+      navigation.navigate('Listagem');
+
+
+    } catch (error){
+      if(error.response) return Alert.alert(`${error.response.data.message}(${error.response.status})`);
+      
+      Alert.alert("Não foi possível salvar!");
+    }
+  }
+
+  /*
+  async function handleRegister(form : FormData) {
+    if(!transactionType)
+      return Alert.alert("Selecione o tipo da transação!");
+
+    if(category.key === 'category')
+      return Alert.alert("Selecione a categoria!");
+
     const newTransaction = {
       id: String(uuid.v4()),
       name: form.name,
@@ -110,7 +179,7 @@ export function Register() {
 
       await AsyncStorage.setItem(dataKey, JSON.stringify(dataFormatted));
 
-      /*Resetando os campos após o cadastro:*/
+      //Resetando os campos após o cadastro:
       reset();
       setTransactionType('');
       setCategory({
@@ -126,6 +195,7 @@ export function Register() {
       Alert.alert("Não foi possível salvar!");
     }
   }
+  */
 
   return (
     <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
@@ -139,7 +209,7 @@ export function Register() {
             <InputForm
               name="name"
               control={control}
-              placeholder="Nome"
+              placeholder="Descrição"
               autoCapitalize="sentences"
               autoCorrect={false}
               error={errors.name && errors.name.message}
