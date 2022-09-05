@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { 
   Modal, 
+  ActivityIndicator,
   TouchableWithoutFeedback, 
   Keyboard,
   Alert
@@ -9,6 +10,7 @@ import * as Yup from 'yup';
 import { yupResolver } from '@hookform/resolvers/yup';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import uuid from 'react-native-uuid';
+import { useTheme } from 'styled-components';
 
 import { useForm } from 'react-hook-form';
 import { useNavigation } from '@react-navigation/native';
@@ -31,6 +33,8 @@ import {
   TransactionsTypes
 } from './styles';
 
+import { LoadContainer } from '../Resume/styles';
+
 interface FormData {
   name: string;
   amount: string;
@@ -52,6 +56,9 @@ const schema = Yup.object().shape({
 });
 
 export function Register() {
+  const theme = useTheme();
+
+  const [isLoading, setIsLoading] = useState(false);
   const [transactionType, setTransactionType] = useState('');
   const [categoryModalOpen, setCategoryModalOpen] = useState(false);
 
@@ -83,24 +90,23 @@ export function Register() {
     setCategoryModalOpen(false);
   }
 
-  async function handleRegister(form : FormData) {
-    if(!transactionType)
-      return Alert.alert("Selecione o tipo da transação!");
-
-    if(category.key === 'category')
-      return Alert.alert("Selecione a categoria!");
-
-
-    console.log(transactionType)
-    
-    const newTransaction = {
-      keyCategory: category.key,
-      description: form.name,
-      amount: form.amount,
-      type: transactionType
-    }
-    
+  async function handleRegister(form : FormData) {    
     try {
+      if(!transactionType) return Alert.alert("Selecione o tipo da transação!");
+
+      if(category.key === 'category') return Alert.alert("Selecione a categoria!");
+
+      const newTransaction = {
+        keyCategory: category.key,
+        description: form.name,
+        amount: form.amount,
+        type: transactionType
+      }
+      
+      setIsLoading(true);
+
+      await new Promise(resolve => setTimeout(resolve, 2000));
+
       const response = await api.post(
         '/statement', 
         newTransaction,
@@ -146,6 +152,8 @@ export function Register() {
       if(error.response) return Alert.alert(`${error.response.data.message}(${error.response.status})`);
       
       Alert.alert("Não foi possível salvar!");
+    } finally{
+      setIsLoading(false);
     }
   }
 
@@ -204,51 +212,60 @@ export function Register() {
           <Title>Cadastro</Title>
         </Header>
 
-        <Form>
-          <Fields>
-            <InputForm
-              name="name"
-              control={control}
-              placeholder="Descrição"
-              autoCapitalize="sentences"
-              autoCorrect={false}
-              error={errors.name && errors.name.message}
+        {
+          isLoading ? 
+          <LoadContainer>
+            <ActivityIndicator 
+              color={theme.colors.secondary}
+              size="large"
             />
-
-            <InputForm
-              name="amount"
-              control={control}
-              placeholder="Preço"
-              keyboardType="numeric"
-              error={errors.amount && errors.amount.message}
-            />
-
-            <TransactionsTypes>
-              <TransactionTypeButton
-                type="up"
-                title="Entrada"
-                onPress={() => handleTransactionsTypeSelect('positive')}
-                isActive={transactionType === 'positive'}
+          </LoadContainer> :
+          <Form>
+            <Fields>
+              <InputForm
+                name="name"
+                control={control}
+                placeholder="Descrição"
+                autoCapitalize="sentences"
+                autoCorrect={false}
+                error={errors.name && errors.name.message}
               />
-              <TransactionTypeButton
-                type="down"
-                title="Saída"
-                onPress={() => handleTransactionsTypeSelect('negative')}
-                isActive={transactionType === 'negative'}
+  
+              <InputForm
+                name="amount"
+                control={control}
+                placeholder="Preço"
+                keyboardType="numeric"
+                error={errors.amount && errors.amount.message}
               />
-            </TransactionsTypes>
-
-            <CategorySelectButton 
-              title={category.name}
-              onPress={handleOpenSelectCategoryModal}
+  
+              <TransactionsTypes>
+                <TransactionTypeButton
+                  type="up"
+                  title="Entrada"
+                  onPress={() => handleTransactionsTypeSelect('positive')}
+                  isActive={transactionType === 'positive'}
+                />
+                <TransactionTypeButton
+                  type="down"
+                  title="Saída"
+                  onPress={() => handleTransactionsTypeSelect('negative')}
+                  isActive={transactionType === 'negative'}
+                />
+              </TransactionsTypes>
+  
+              <CategorySelectButton 
+                title={category.name}
+                onPress={handleOpenSelectCategoryModal}
+              />
+            </Fields>
+            
+            <Button 
+              title="Enviar"
+              onPress={handleSubmit(handleRegister)}
             />
-          </Fields>
-          
-          <Button 
-            title="Enviar"
-            onPress={handleSubmit(handleRegister)}
-          />
-        </Form>
+          </Form>
+        }
         
         <Modal visible={categoryModalOpen}>
           <CategorySelect 
