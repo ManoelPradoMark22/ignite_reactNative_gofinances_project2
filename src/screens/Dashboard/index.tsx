@@ -58,28 +58,24 @@ interface HighlightData {
   total: HighlightProps;
 }
 
+const emptyHighlightProps = () : HighlightProps => ({
+  amount: '',
+  lastTransaction: '',
+  typeTotalTransaction: 'zero'
+})
+
+const emptyHighlightData = () : HighlightData => ({
+  entries: emptyHighlightProps(),
+  expensives: emptyHighlightProps(),
+  total: emptyHighlightProps()
+});
+
 export function Dashboard() {
   const theme = useTheme();
   const [isLoading, setIsLoading] = useState(false);
   const [transactions, setTransactions] = useState<DataListProps[]>([]);
   const [categories, setCategories] = useState<CategoryProps[]>([]);
-  const [highlightData, setHighlightData] = useState<HighlightData>({
-    entries: {
-      amount: '',
-      lastTransaction: '',
-      typeTotalTransaction: 'zero'
-    },
-    expensives: {
-      amount: '',
-      lastTransaction: '',
-      typeTotalTransaction: 'zero'
-    },
-    total: {
-      amount: '',
-      lastTransaction: '',
-      typeTotalTransaction: 'zero'
-    }
-  });
+  const [highlightData, setHighlightData] = useState<HighlightData>(emptyHighlightData());
 
   function getLastTransactionDate(
     collection : StatementProps[],
