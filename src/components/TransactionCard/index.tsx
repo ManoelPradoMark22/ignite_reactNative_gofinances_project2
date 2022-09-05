@@ -1,5 +1,4 @@
 import React from 'react';
-import { categories } from '../../utils/categories';
 
 import { 
   Container,
@@ -15,6 +14,16 @@ import {
 import { ScroolHorizontalText } from '../../global/ComponentsStyled';
 
 
+export interface CategoryProps {
+  _id: string,
+  key: string,
+  name: string,
+  icon: string,
+  createdAt: string,
+  updatedAt: string,
+  __v: number
+}
+
 export interface TransactionCardProps {
   type: 'positive' | 'negative';
   name: string;
@@ -24,10 +33,11 @@ export interface TransactionCardProps {
 }
 
 interface Props {
-  data: TransactionCardProps;
+  data: TransactionCardProps,
+  categories: Array<CategoryProps>
 }
 
-export function TransactionCard({ data } : Props) {
+export function TransactionCard({ data, categories } : Props) {
   const [ category ] = categories.filter(
     item => item.key === data.category
   );

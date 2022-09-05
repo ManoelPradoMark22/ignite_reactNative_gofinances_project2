@@ -1,12 +1,13 @@
 import React, { useCallback, useState, useEffect } from 'react';
-import { ActivityIndicator } from 'react-native';
+import { ActivityIndicator, Alert } from 'react-native';
 import { useTheme } from 'styled-components';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
 import { useFocusEffect } from '@react-navigation/native';
 
+import api from '../../services/api'
 import { HighlightCard } from '../../components/HighlightCard';
-import { TransactionCard, TransactionCardProps } from '../../components/TransactionCard';
+import { TransactionCard, TransactionCardProps, CategoryProps } from '../../components/TransactionCard';
 
 import emptyListImage from '../../assets/opps.png';
 
@@ -33,6 +34,17 @@ import {
 export interface DataListProps extends TransactionCardProps {
   id: string;
 }
+export interface StatementProps {
+  _id: string,
+  accountCpf: string,
+  keyCategory: string,
+  description: string,
+  amount: number,
+  type: 'positive' | 'negative',
+  createdAt: string,
+  updatedAt: string,
+  __v: number
+}
 
 interface HighlightProps {
   amount: string;
@@ -48,19 +60,37 @@ interface HighlightData {
 
 export function Dashboard() {
   const theme = useTheme();
-  const [isLoading, setIsLoading] = useState(true);
+  const [isLoading, setIsLoading] = useState(false);
   const [transactions, setTransactions] = useState<DataListProps[]>([]);
-  const [highlightData, setHighlightData] = useState<HighlightData>({} as HighlightData);
+  const [categories, setCategories] = useState<CategoryProps[]>([]);
+  const [highlightData, setHighlightData] = useState<HighlightData>({
+    entries: {
+      amount: '',
+      lastTransaction: '',
+      typeTotalTransaction: 'zero'
+    },
+    expensives: {
+      amount: '',
+      lastTransaction: '',
+      typeTotalTransaction: 'zero'
+    },
+    total: {
+      amount: '',
+      lastTransaction: '',
+      typeTotalTransaction: 'zero'
+    }
+  });
 
   function getLastTransactionDate(
-    collection : DataListProps[],
+    collection : StatementProps[],
     type: 'positive' | 'negative'  
   ){
     const todayDateYear = (new Date()).getFullYear();
 
     const dataArray = collection
     .filter(transaction => transaction.type === type)
-    .map(transaction => new Date(transaction.date).getTime());
+    .map(transaction => new Date(transaction.createdAt).getTime());
+
     
     const lastTransaction = new Date(
     Math.max.apply(Math, dataArray));
@@ -71,9 +101,9 @@ export function Dashboard() {
   }
 
   function getTotalIntervalTransactionDate(
-    collection : DataListProps[],
+    collection : StatementProps[],
   ){
-    const dateArray = collection.map(transaction => new Date(transaction.date).getTime());
+    const dateArray = collection.map(transaction => new Date(transaction.createdAt).getTime());
 
     const lastTransaction = new Date(Math.max.apply(Math, dateArray));
 
@@ -117,67 +147,77 @@ export function Dashboard() {
   }
 
   async function loadTransactions(){
-    const dataKey = '@gofinances:transactions';
-    const response = await AsyncStorage.getItem(dataKey);
-    const transactions = response ? JSON.parse(response) : [];
 
-    let entriesTotal = 0;
-    let expensiveTotal = 0;
+    try{
+      setIsLoading(true);
+      await new Promise(resolve => setTimeout(resolve, 2000));
 
-    const transactionsFormatted : DataListProps[] = transactions
-    .map((item : DataListProps) => {
+      const response = await api('/full-dashboard', {
+        method: 'GET',
+        headers: {
+          "cpf": "06350390520"
+        }
+      });
+      
+      const { data } = response.data;
 
-      if(item.type === 'positive') {
-        entriesTotal += Number(item.amount);
-      } else {
-        expensiveTotal += Number(item.amount);
-      }
+      if(!data) return Alert.alert(`${response.data.message}(${response.data.httpStatusCode})`);
 
-      let amount = convertToReal(Number(item.amount));
+      Alert.alert(`${response.data.message}(${response.data.httpStatusCode})`);
 
-      const date = Intl.DateTimeFormat('pt-BR', {
-        day: '2-digit',
-        month: '2-digit',
-        year: '2-digit'
-      }).format(new Date(item.date));
+      const { statements: transactions, balance, categories } = data;
 
-      return {
-        id: item.id,
-        name: item.name,
-        amount,
-        type: item.type,
-        category: item.category,
-        date
-      }
-    });
+      const transactionsFormatted : DataListProps[] = transactions
+      .map((item : StatementProps) => {
 
-    setTransactions(transactionsFormatted);
+        const date = Intl.DateTimeFormat('pt-BR', {
+          day: '2-digit',
+          month: '2-digit',
+          year: '2-digit'
+        }).format(new Date(item.createdAt));
 
-    const lengthArray = transactions.length;
+        return {
+          id: item._id,
+          name: item.description,
+          amount: convertToReal(item.amount),
+          type: item.type,
+          category: item.keyCategory,
+          date
+        }
+      });
 
-    const lastTransactionEntries = lengthArray===0 ? '' : getLastTransactionDate(transactions, 'positive');
-    const lastTransactionExpensives = lengthArray===0 ? '' : getLastTransactionDate(transactions, 'negative');
-    const totalInterval = lengthArray===0 ? '' : getTotalIntervalTransactionDate(transactions);
+      setCategories(categories);
+      setTransactions(transactionsFormatted);
 
-    const total = entriesTotal - expensiveTotal;
+      const lengthArray = transactions.length;
 
-    setHighlightData({
-      entries: {
-        amount: convertToReal(entriesTotal),
-        lastTransaction: lastTransactionEntries,
-      },
-      expensives: {
-        amount: convertToReal(expensiveTotal),
-        lastTransaction: lastTransactionExpensives,
-      },
-      total: {
-        amount: convertToReal(total),
-        lastTransaction: totalInterval,
-        typeTotalTransaction: totalTransactionsType(total),
-      }
-    });
+      const lastTransactionEntries = lengthArray===0 ? '' : getLastTransactionDate(transactions, 'positive');
+      const lastTransactionExpensives = lengthArray===0 ? '' : getLastTransactionDate(transactions, 'negative');
+      const totalInterval = lengthArray===0 ? '' : getTotalIntervalTransactionDate(transactions);
 
-    setIsLoading(false);
+
+      setHighlightData({
+        entries: {
+          amount: convertToReal(balance.inflow),
+          lastTransaction: lastTransactionEntries,
+        },
+        expensives: {
+          amount: convertToReal(balance.outflow),
+          lastTransaction: lastTransactionExpensives,
+        },
+        total: {
+          amount: convertToReal(balance.total),
+          lastTransaction: totalInterval,
+          typeTotalTransaction: totalTransactionsType(balance.total),
+        }
+      });
+    }catch(error){
+      if(error.response) return Alert.alert(`${error.response.data.message}(${error.response.status})`);
+      
+      Alert.alert("Não foi possível carregar!");
+    }finally{
+      setIsLoading(false);
+    }
   }
 
   useFocusEffect(useCallback(() => {
@@ -239,7 +279,7 @@ export function Dashboard() {
             <TransactionList 
               data={transactions}
               keyExtractor={item => item.id}
-              renderItem={({ item }) => <TransactionCard data={item} />}
+              renderItem={({ item }) => <TransactionCard data={item} categories={categories}/>}
               ListEmptyComponent={
                 <ImageContainer>
                   <ImageEmpty source={emptyListImage}/>
