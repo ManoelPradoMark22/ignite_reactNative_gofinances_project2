@@ -59,7 +59,7 @@ interface HighlightData {
 }
 
 const emptyHighlightProps = () : HighlightProps => ({
-  amount: '',
+  amount: 'R$',
   lastTransaction: '',
   typeTotalTransaction: 'zero'
 })
@@ -223,13 +223,6 @@ export function Dashboard() {
   return (
     <Container>
       {
-        isLoading ? 
-        <LoadContainer>
-          <ActivityIndicator 
-            color={theme.colors.secondary}
-            size="large"
-          />
-        </LoadContainer> :
         <>
           <Header>
             <UserWrapper>
@@ -271,16 +264,24 @@ export function Dashboard() {
 
           <Transactions>
             <Title>Listagem</Title>
-
-            <TransactionList 
-              data={transactions}
-              keyExtractor={item => item.id}
-              renderItem={({ item }) => <TransactionCard data={item} categories={categories}/>}
-              ListEmptyComponent={
-                <ImageContainer>
-                  <ImageEmpty source={emptyListImage}/>
-                </ImageContainer>}
-            />
+            {
+              isLoading ? 
+              <LoadContainer>
+                <ActivityIndicator 
+                  color={theme.colors.secondary}
+                  size="large"
+                />
+              </LoadContainer> :
+              <TransactionList 
+                data={transactions}
+                keyExtractor={item => item.id}
+                renderItem={({ item }) => <TransactionCard data={item} categories={categories}/>}
+                ListEmptyComponent={
+                  <ImageContainer>
+                    <ImageEmpty source={emptyListImage}/>
+                  </ImageContainer>}
+              />
+            }
           </Transactions>
         </>
       }
