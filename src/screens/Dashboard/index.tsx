@@ -143,6 +143,28 @@ export function Dashboard() {
     }
   }
 
+  async function deleteAllStatements(){
+    try{
+      setIsLoading(true);
+      await new Promise(resolve => setTimeout(resolve, 1000));
+
+      const response = await api('/statement', {
+        method: 'DELETE',
+        headers: {
+          "cpf": "06350390520"
+        }
+      });
+
+      Alert.alert(`${response.data.name} - ${response.data.message}(${response.data.httpStatusCode})`);
+    }catch(error) {
+      if(error.response) return Alert.alert(`${error.response.data.message}(${error.response.status})`);
+      Alert.alert('Error!');
+    }finally{
+      setIsLoading(false);
+    }
+  }
+
+
   async function loadTransactions(){
 
     try{
@@ -266,9 +288,13 @@ export function Dashboard() {
           <Transactions>
             <HeaderTransactions>
               <Title>Listagem</Title>
-              <PressButton onPress={() => {}}>
-                <Icon name='trash-2'/>
-              </PressButton>
+              {
+                transactions.length>0 && (
+                  <PressButton onPress={deleteAllStatements}>
+                    <Icon name='trash-2'/>
+                  </PressButton>
+                )
+              }
             </HeaderTransactions>
             {
               isLoading ? 
