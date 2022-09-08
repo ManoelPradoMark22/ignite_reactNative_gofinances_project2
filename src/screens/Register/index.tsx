@@ -105,7 +105,7 @@ export function Register() {
       
       setIsLoading(true);
 
-      await new Promise(resolve => setTimeout(resolve, 2000));
+      await new Promise(resolve => setTimeout(resolve, 1000));
 
       const response = await api.post(
         '/statement', 

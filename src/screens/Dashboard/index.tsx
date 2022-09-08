@@ -23,9 +23,10 @@ import {
   Icon,
   HighLightCards,
   Transactions,
+  HeaderTransactions,
   Title,
   TransactionList,
-  LogoutButton,
+  PressButton,
   LoadContainer,
   ImageContainer,
   ImageEmpty
@@ -146,7 +147,7 @@ export function Dashboard() {
 
     try{
       setIsLoading(true);
-      await new Promise(resolve => setTimeout(resolve, 2000));
+      await new Promise(resolve => setTimeout(resolve, 1000));
 
       const response = await api('/full-dashboard', {
         method: 'GET',
@@ -234,9 +235,9 @@ export function Dashboard() {
                 </User>
               </UserInfo>
 
-              <LogoutButton onPress={() => {}}>
+              <PressButton onPress={() => {}}>
                 <Icon name="power"/>
-              </LogoutButton>
+              </PressButton>
             </UserWrapper>
           </Header>
 
@@ -263,7 +264,12 @@ export function Dashboard() {
           </HighLightCards>
 
           <Transactions>
-            <Title>Listagem</Title>
+            <HeaderTransactions>
+              <Title>Listagem</Title>
+              <PressButton onPress={() => {}}>
+                <Icon name='trash-2'/>
+              </PressButton>
+            </HeaderTransactions>
             {
               isLoading ? 
               <LoadContainer>

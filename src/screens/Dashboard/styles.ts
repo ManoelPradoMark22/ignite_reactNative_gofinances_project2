@@ -69,7 +69,7 @@ export const UserName = styled.Text`
   font-family: ${({ theme }) => theme.fonts.bold};
 `;
 
-export const LogoutButton = styled(BorderlessButton)`
+export const PressButton = styled(BorderlessButton)`
 
 `;
 
@@ -94,6 +94,12 @@ export const Transactions = styled.View`
   padding: 0 24px;
 
   margin-top: ${RFPercentage(12)}px;
+`;
+
+export const HeaderTransactions = styled.View`
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: center;
 `;
 
 export const Title = styled.Text`
