@@ -74,6 +74,7 @@ const emptyHighlightData = () : HighlightData => ({
 export function Dashboard() {
   const theme = useTheme();
   const [isLoading, setIsLoading] = useState(false);
+  const [refresh, setRefresh] = useState(false);
   const [transactions, setTransactions] = useState<DataListProps[]>([]);
   const [categories, setCategories] = useState<CategoryProps[]>([]);
   const [highlightData, setHighlightData] = useState<HighlightData>(emptyHighlightData());
@@ -154,7 +155,7 @@ export function Dashboard() {
           "cpf": "06350390520"
         }
       });
-
+      setRefresh(!refresh);
       Alert.alert(`${response.data.name} - ${response.data.message}(${response.data.httpStatusCode})`);
     }catch(error) {
       if(error.response) return Alert.alert(`${error.response.data.message}(${error.response.status})`);
@@ -239,9 +240,9 @@ export function Dashboard() {
     }
   }
 
-  useFocusEffect(useCallback(() => {
+  useEffect(() => {
     loadTransactions();
-  },[]));
+  },[refresh]);
 
   return (
     <Container>
