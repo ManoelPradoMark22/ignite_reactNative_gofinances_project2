@@ -144,7 +144,23 @@ export function Dashboard() {
     }
   }
 
+  function handleConfirmAllDelete() {
+    Alert.alert(
+      "Deletar todos os statements!",
+      "Tem certeza que quer deletar todos os statements?",
+      [
+        {
+          text: "Cancelar",
+          onPress: () => console.log("Cancel Pressed"),
+          style: "cancel"
+        },
+        { text: "Confirmar", onPress: () => deleteAllStatements() }
+      ]
+    );
+  }
+
   async function deleteAllStatements(){
+
     try{
       setIsLoading(true);
       await new Promise(resolve => setTimeout(resolve, 1000));
@@ -155,6 +171,8 @@ export function Dashboard() {
           "cpf": "06350390520"
         }
       });
+      setTransactions([]);
+      setHighlightData(emptyHighlightData);
       setRefresh(!refresh);
       Alert.alert(`${response.data.name} - ${response.data.message}(${response.data.httpStatusCode})`);
     }catch(error) {
@@ -183,7 +201,7 @@ export function Dashboard() {
 
       if(!data) return Alert.alert(`${response.data.message}(${response.data.httpStatusCode})`);
 
-      Alert.alert(`${response.data.message}(${response.data.httpStatusCode})`);
+      //Alert.alert(`${response.data.message}(${response.data.httpStatusCode})`);
 
       const { statements: transactions, balance, categories } = data;
 
@@ -240,8 +258,11 @@ export function Dashboard() {
     }
   }
 
-  useEffect(() => {
+  useFocusEffect(useCallback(() => {
     loadTransactions();
+  },[]));
+
+  useEffect(() => {
   },[refresh]);
 
   return (
@@ -291,7 +312,7 @@ export function Dashboard() {
               <Title>Listagem</Title>
               {
                 transactions.length>0 && (
-                  <PressButton onPress={deleteAllStatements}>
+                  <PressButton onPress={handleConfirmAllDelete}>
                     <Icon name='trash-2'/>
                   </PressButton>
                 )
