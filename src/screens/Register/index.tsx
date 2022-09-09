@@ -90,6 +90,15 @@ export function Register() {
     setCategoryModalOpen(false);
   }
 
+  function convertToReal(value: number) {
+    const string = value.toLocaleString('pt-BR', {
+      style: 'currency',
+      currency: 'BRL'
+    });
+
+    return string.replace('R$', 'R$ ');
+  }
+
   async function handleRegister(form : FormData) {    
     try {
       if(!transactionType) return Alert.alert("Selecione o tipo da transação!");
@@ -135,7 +144,9 @@ export function Register() {
       })
       */
 
-      Alert.alert(`${response.data.message}(${response.data.httpStatusCode})`);
+      const { message, httpStatusCode, data } = response.data;
+
+      Alert.alert(`${message}(${httpStatusCode})`);
 
       /*Resetando os campos após o cadastro:*/
       reset();
@@ -144,8 +155,23 @@ export function Register() {
         key: 'category',
         name: 'Categoria'
       });
+      
+      const date = Intl.DateTimeFormat('pt-BR', {
+        day: '2-digit',
+        month: '2-digit',
+        year: '2-digit'
+      }).format(new Date(data.createdAt));
 
-      navigation.navigate('Listagem');
+      navigation.navigate('Listagem', {
+        statement: {
+          id: data._id,
+          name: data.description,
+          amount: convertToReal(data.amount),
+          type: data.type,
+          category: data.keyCategory,
+          date
+        }
+      });
 
 
     } catch (error){

@@ -71,13 +71,24 @@ const emptyHighlightData = () : HighlightData => ({
   total: emptyHighlightProps()
 });
 
-export function Dashboard() {
+export function Dashboard({ navigation, route }) {
   const theme = useTheme();
   const [isLoading, setIsLoading] = useState(false);
   const [refresh, setRefresh] = useState(false);
   const [transactions, setTransactions] = useState<DataListProps[]>([]);
   const [categories, setCategories] = useState<CategoryProps[]>([]);
   const [highlightData, setHighlightData] = useState<HighlightData>(emptyHighlightData());
+
+  if(route) {
+    if(route.params){
+      if(route.params.statement){
+        console.log(route.params.statement)
+        transactions.unshift(route.params.statement);
+        delete route.params.statement;
+        setRefresh(!refresh);
+      }
+    }
+  }
 
   function getLastTransactionDate(
     collection : StatementProps[],
@@ -185,7 +196,6 @@ export function Dashboard() {
 
 
   async function loadTransactions(){
-
     try{
       setIsLoading(true);
       await new Promise(resolve => setTimeout(resolve, 1000));
@@ -258,9 +268,9 @@ export function Dashboard() {
     }
   }
 
-  useFocusEffect(useCallback(() => {
+  useEffect(() => {
     loadTransactions();
-  },[]));
+  },[]);
 
   useEffect(() => {
   },[refresh]);
