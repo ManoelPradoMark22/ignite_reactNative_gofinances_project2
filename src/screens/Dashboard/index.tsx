@@ -49,6 +49,7 @@ export interface StatementProps {
 
 interface HighlightProps {
   amount: string;
+  amountNumber: number,
   lastTransaction: string;
   typeTotalTransaction?: 'positive' | 'negative' | 'zero';
 }
@@ -60,7 +61,8 @@ interface HighlightData {
 }
 
 const emptyHighlightProps = () : HighlightProps => ({
-  amount: 'R$',
+  amount: 'R$ 0,00',
+  amountNumber: 0,
   lastTransaction: '',
   typeTotalTransaction: 'zero'
 })
@@ -73,19 +75,82 @@ const emptyHighlightData = () : HighlightData => ({
 
 export function Dashboard({ navigation, route }) {
   const theme = useTheme();
+
+  //reduzir o numero de useStates. manter o essencial (transactions talvez seria o essencial?)
   const [isLoading, setIsLoading] = useState(false);
   const [refresh, setRefresh] = useState(false);
+  const [firstTransactionDate, setfirstTransactionDate] = useState(new Date());
   const [transactions, setTransactions] = useState<DataListProps[]>([]);
   const [categories, setCategories] = useState<CategoryProps[]>([]);
   const [highlightData, setHighlightData] = useState<HighlightData>(emptyHighlightData());
 
   if(route) {
     if(route.params){
-      if(route.params.statement){
-        console.log(route.params.statement)
-        transactions.unshift(route.params.statement);
+      if(route.params.statement){  
+        const objStatement = route.params.statement;
+
+        const date = Intl.DateTimeFormat('pt-BR', {
+          day: '2-digit',
+          month: '2-digit',
+          year: '2-digit'
+        }).format(new Date(objStatement.createdAt));
+
+        setTransactions([
+          {
+            id: objStatement._id,
+            name: objStatement.description,
+            amount: convertToReal(objStatement.amount),
+            type: objStatement.type,
+            category: objStatement.keyCategory,
+            date
+          }, ...transactions
+        ]);
+
+        let newHighlightData = {
+          ...highlightData
+        };
+        
+        let entries = highlightData.entries.amountNumber;
+        let expensives = highlightData.expensives.amountNumber;
+        
+        const lastTransaction = new Date();
+        const textDataInOut = `${lastTransaction.getDate()} de ${lastTransaction.toLocaleString('pt-BR', { month: 'long' })}`;
+        if(objStatement.type==='negative')  {
+          expensives += objStatement.amount;
+          newHighlightData.expensives.amount = convertToReal(expensives);
+          newHighlightData.expensives.amountNumber = expensives;
+          newHighlightData.expensives.lastTransaction = `Última saída dia ${textDataInOut}`;
+        }else {
+          entries += objStatement.amount;
+          newHighlightData.entries.amount = convertToReal(entries);
+          newHighlightData.entries.amountNumber = entries;
+          newHighlightData.entries.lastTransaction = `Última entrada dia ${textDataInOut}`;
+        }
+        
+        const lastTransactionFormmated = Intl.DateTimeFormat('pt-BR', {
+          day: '2-digit',
+          month: 'short',
+        }).format(lastTransaction);
+
+        const firstTransactionFormmated = Intl.DateTimeFormat('pt-BR', {
+          day: '2-digit',
+          month: 'short',
+        }).format(firstTransactionDate);
+
+        const firstTransactionYear = firstTransactionDate.getFullYear();
+        const lastTransactionYear = lastTransaction.getFullYear();
+
+        let total = entries - expensives;
+        newHighlightData.total.amount = convertToReal(total);
+        newHighlightData.total.amountNumber = total;
+        newHighlightData.total.lastTransaction = firstTransactionYear===lastTransactionYear 
+        ? `${firstTransactionFormmated} ~ ${lastTransactionFormmated}`
+        : `${firstTransactionFormmated}. ${firstTransactionYear} ~ ${lastTransactionFormmated}. ${lastTransactionYear}`;
+        newHighlightData.total.typeTotalTransaction = totalTransactionsType(total);
+        
+        setHighlightData(newHighlightData);
+
         delete route.params.statement;
-        setRefresh(!refresh);
       }
     }
   }
@@ -122,6 +187,7 @@ export function Dashboard({ navigation, route }) {
     }).format(lastTransaction);
 
     const firstTransaction = new Date(Math.min.apply(Math, dateArray));
+    setfirstTransactionDate(firstTransaction);
 
     const firstTransactionFormmated = Intl.DateTimeFormat('pt-BR', {
       day: '2-digit',
@@ -247,14 +313,17 @@ export function Dashboard({ navigation, route }) {
       setHighlightData({
         entries: {
           amount: convertToReal(balance.inflow),
+          amountNumber: balance.inflow,
           lastTransaction: lastTransactionEntries,
         },
         expensives: {
           amount: convertToReal(balance.outflow),
+          amountNumber: balance.outflow,
           lastTransaction: lastTransactionExpensives,
         },
         total: {
           amount: convertToReal(balance.total),
+          amountNumber: balance.total,
           lastTransaction: totalInterval,
           typeTotalTransaction: totalTransactionsType(balance.total),
         }
@@ -271,9 +340,6 @@ export function Dashboard({ navigation, route }) {
   useEffect(() => {
     loadTransactions();
   },[]);
-
-  useEffect(() => {
-  },[refresh]);
 
   return (
     <Container>

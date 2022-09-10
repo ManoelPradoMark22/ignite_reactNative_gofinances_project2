@@ -90,15 +90,6 @@ export function Register() {
     setCategoryModalOpen(false);
   }
 
-  function convertToReal(value: number) {
-    const string = value.toLocaleString('pt-BR', {
-      style: 'currency',
-      currency: 'BRL'
-    });
-
-    return string.replace('R$', 'R$ ');
-  }
-
   async function handleRegister(form : FormData) {    
     try {
       if(!transactionType) return Alert.alert("Selecione o tipo da transação!");
@@ -124,29 +115,11 @@ export function Register() {
             "cpf": "06350390520"
           }
         }
-      )
-      /*
-      const response = await api.get(
-        '/all-statements'
       );
-      */
-      /* 
-      const response = await fetch(`${baseUrl}/statement`, {
-        method: 'POST',
-        mode: 'no-cors',
-        body: JSON.stringify(newTransaction),
-        headers: {
-          'Content-type': 'application/json; charset=UTF-8'
-        }
-      }).then(res => {
-        console.log(res);
-        return res;
-      })
-      */
 
       const { message, httpStatusCode, data } = response.data;
 
-      Alert.alert(`${message}(${httpStatusCode})`);
+      //Alert.alert(`${message}(${httpStatusCode})`);
 
       /*Resetando os campos após o cadastro:*/
       reset();
@@ -155,23 +128,8 @@ export function Register() {
         key: 'category',
         name: 'Categoria'
       });
-      
-      const date = Intl.DateTimeFormat('pt-BR', {
-        day: '2-digit',
-        month: '2-digit',
-        year: '2-digit'
-      }).format(new Date(data.createdAt));
 
-      navigation.navigate('Listagem', {
-        statement: {
-          id: data._id,
-          name: data.description,
-          amount: convertToReal(data.amount),
-          type: data.type,
-          category: data.keyCategory,
-          date
-        }
-      });
+      navigation.navigate('Listagem', { statement: data });
 
 
     } catch (error){
@@ -182,54 +140,6 @@ export function Register() {
       setIsLoading(false);
     }
   }
-
-  /*
-  async function handleRegister(form : FormData) {
-    if(!transactionType)
-      return Alert.alert("Selecione o tipo da transação!");
-
-    if(category.key === 'category')
-      return Alert.alert("Selecione a categoria!");
-
-    const newTransaction = {
-      id: String(uuid.v4()),
-      name: form.name,
-      amount: form.amount,
-      type: transactionType,
-      category: category.key,
-      date: new Date()
-    }
-    
-    try {
-      const dataKey = '@gofinances:transactions';
-
-      const data = await AsyncStorage.getItem(dataKey);
-      const currentData = data ? JSON.parse(data) : [];
-
-      const dataFormatted = [
-        newTransaction,
-        ...currentData
-      ]
-
-      await AsyncStorage.setItem(dataKey, JSON.stringify(dataFormatted));
-
-      //Resetando os campos após o cadastro:
-      reset();
-      setTransactionType('');
-      setCategory({
-        key: 'category',
-        name: 'Categoria'
-      });
-
-      navigation.navigate('Listagem');
-
-
-    } catch (error){
-      console.log(error);
-      Alert.alert("Não foi possível salvar!");
-    }
-  }
-  */
 
   return (
     <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
