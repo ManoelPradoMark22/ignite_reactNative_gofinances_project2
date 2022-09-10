@@ -1,5 +1,5 @@
 import React, { useCallback, useState, useEffect } from 'react';
-import { ActivityIndicator, Alert } from 'react-native';
+import { ActivityIndicator, Alert, RefreshControl } from 'react-native';
 import { useTheme } from 'styled-components';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
@@ -73,16 +73,29 @@ const emptyHighlightData = () : HighlightData => ({
   total: emptyHighlightProps()
 });
 
+const wait = (timeout : number) => {
+  return new Promise(resolve => setTimeout(resolve, timeout));
+};
+
 export function Dashboard({ navigation, route }) {
   const theme = useTheme();
 
   //reduzir o numero de useStates. manter o essencial (transactions talvez seria o essencial?)
   const [isLoading, setIsLoading] = useState(false);
+  const [refreshing, setRefreshing] = useState(false);
   const [refresh, setRefresh] = useState(false);
   const [firstTransactionDate, setfirstTransactionDate] = useState(new Date());
   const [transactions, setTransactions] = useState<DataListProps[]>([]);
   const [categories, setCategories] = useState<CategoryProps[]>([]);
   const [highlightData, setHighlightData] = useState<HighlightData>(emptyHighlightData());
+
+  const onRefresh = useCallback(() => {
+    setRefreshing(true);
+    wait(1000).then(() => {
+      setRefreshing(false);
+      loadTransactions();
+    });
+  }, []);
 
   if(route) {
     if(route.params){
@@ -404,6 +417,7 @@ export function Dashboard({ navigation, route }) {
               </LoadContainer> :
               <TransactionList 
                 data={transactions}
+                refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} />}
                 keyExtractor={item => item.id}
                 renderItem={({ item }) => <TransactionCard data={item} categories={categories}/>}
                 ListEmptyComponent={
