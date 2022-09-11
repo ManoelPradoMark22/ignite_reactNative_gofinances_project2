@@ -57,6 +57,16 @@ export function Resume() {
   const [transactionType, setTransactionType] = useState('negative');
   const [selectedDate, setSelectedDate] = useState(new Date());
   const [totalByCategories, setTotalByCategories] = useState<CategoryData[]>([]);
+  const [resumeData, setResumeData] = useState({
+    inflow: {
+      data: [],
+      total: 0
+    },
+    outflow: {
+        data: [],
+        total: 0
+      }
+  });
 
   const theme = useTheme();
 
@@ -73,31 +83,12 @@ export function Resume() {
     }
   }
 
-  function handleTransactionsTypeSelect(type: 'positive' | 'negative') {
-    setTransactionType(type);
-  }
-
-  async function loadData() {
-    setIsLoading(true);
-    await new Promise(resolve => setTimeout(resolve, 1000));
-
-    const response = await api('/full-balance-filter', {
-      method: 'GET',
-      headers: {
-        "cpf": "06350390520",
-        "date": (selectedDate).toString()
-      }
-    });
-    
-    const { data } = response.data;
-
-    if(!data) return Alert.alert(`${response.data.message}(${response.data.httpStatusCode})`);
-
+  function setData(data, type) {
     const { inflow, outflow } = data;
 
     const totalByCategory : CategoryData[] = [];
 
-    if(transactionType==='negative') {
+    if(type==='negative') {
       const totalOutflow = outflow.total;
       if(totalOutflow>0){
         outflow.data.forEach(item => {
@@ -159,9 +150,50 @@ export function Resume() {
     setIsLoading(false);
   }
 
+  function handleTransactionsTypeSelect(type: 'positive' | 'negative') {
+    try {
+      setIsLoading(true);
+      setTransactionType(type);
+      setData(resumeData, type);
+    }catch(error){
+      Alert.alert("Não foi possível carregar!");
+    }finally{
+      setIsLoading(false);
+    }
+  }
+
+  async function loadData(type) {
+    try {
+      setIsLoading(true);
+      await new Promise(resolve => setTimeout(resolve, 1000));
+  
+      const response = await api('/full-balance-filter', {
+        method: 'GET',
+        headers: {
+          "cpf": "06350390520",
+          "date": (selectedDate).toString()
+        }
+      });
+      
+      const { data } = response.data;
+  
+      if(!data) return Alert.alert(`${response.data.message}(${response.data.httpStatusCode})`);
+  
+      setResumeData(data);
+      setData(data, type);
+    }catch(error) {
+      if(error.response) return Alert.alert(`${error.response.data.message}(${error.response.status})`);
+      
+      Alert.alert("Não foi possível carregar!");
+    }finally{
+      setIsLoading(false);
+    }
+  }
+
   useFocusEffect(useCallback(() => {
-    loadData();
-  },[selectedDate, transactionType]));
+    setTransactionType('negative');
+    loadData('negative');
+  },[selectedDate]));
 
   return (
     <Container>
