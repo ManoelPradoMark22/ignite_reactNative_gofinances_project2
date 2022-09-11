@@ -9,6 +9,7 @@ import { ptBR } from 'date-fns/locale';
 import { useBottomTabBarHeight } from '@react-navigation/bottom-tabs';
 import { useTheme } from 'styled-components';
 
+import api from '../../services/api'
 import { HistoryCard } from '../../components/HistoryCard';
 import { TransactionTypeButton } from '../../components/Form/TransactionTypeButton';
 
@@ -78,53 +79,81 @@ export function Resume() {
 
   async function loadData() {
     setIsLoading(true);
-    const dataKey = '@gofinances:transactions';
-    const response = await AsyncStorage.getItem(dataKey);
-    const responseFormatted = response ? JSON.parse(response) : [];
+    await new Promise(resolve => setTimeout(resolve, 1000));
 
-    const expensives = responseFormatted
-    .filter((expensive : TransactionData) => 
-      expensive.type === transactionType &&
-      new Date(expensive.date).getMonth() === selectedDate.getMonth() &&
-      new Date(expensive.date).getFullYear() === selectedDate.getFullYear()
-    );
+    const response = await api('/full-balance-filter', {
+      method: 'GET',
+      headers: {
+        "cpf": "06350390520",
+        "date": (new Date()).toString()
+      }
+    });
+    
+    const { data } = response.data;
 
-    const expensiveTotal = expensives
-    .reduce((acumullator : number, expensive : TransactionData) => {
-      return acumullator + Number(expensive.amount);
-    }, 0);
+    if(!data) return Alert.alert(`${response.data.message}(${response.data.httpStatusCode})`);
+
+    const { inflow, outflow } = data;
 
     const totalByCategory : CategoryData[] = [];
 
-    categories.forEach(category => {
-      let categorySum = 0;
-
-      expensives.forEach((expensive : TransactionData) => {
-        if(expensive.category === category.key) {
-          categorySum += Number(expensive.amount);
-        }
-      });
-
-      if(categorySum>0){
-        const total = categorySum
-        .toLocaleString('pt-BR', {
-          style: 'currency',
-          currency: 'BRL'
-        });
-
-        const numPercent = categorySum/expensiveTotal *100;
-        const percent = `${numPercent < 1 ? numPercent.toFixed(2) : numPercent.toFixed(0)}%`;
-
-        totalByCategory.push({
-          key: category.key,
-          name: category.name,
-          color: category.color,
-          total: categorySum,
-          totalFormatted: total.replace('R$', 'R$ '),
-          percent
+    if(transactionType==='negative') {
+      const totalOutflow = outflow.total;
+      if(totalOutflow>0){
+        outflow.data.forEach(item => {
+          categories.forEach(category => {
+            if(item.keyCategory==category.key) {
+              const totalNumber = item.amount;
+              const total = totalNumber
+              .toLocaleString('pt-BR', {
+                style: 'currency',
+                currency: 'BRL'
+              });
+        
+              const numPercent = (totalNumber/totalOutflow) *100;
+              const percent = `${numPercent < 1 ? numPercent.toFixed(2) : numPercent.toFixed(0)}%`;
+        
+              totalByCategory.push({
+                key: category.key,
+                name: category.name,
+                color: category.color,
+                total: totalNumber,
+                totalFormatted: total.replace('R$', 'R$ '),
+                percent
+              });
+            }
+          });
         });
       }
-    });
+    }else {
+      const totalInflow = inflow.total;
+      if(totalInflow>0){
+        inflow.data.forEach(item => {
+          categories.forEach(category => {
+            if(item.keyCategory==category.key) {
+              const totalNumber = item.amount;
+              const total = totalNumber
+              .toLocaleString('pt-BR', {
+                style: 'currency',
+                currency: 'BRL'
+              });
+    
+              const numPercent = (totalNumber/totalInflow) *100;
+              const percent = `${numPercent < 1 ? numPercent.toFixed(2) : numPercent.toFixed(0)}%`;
+    
+              totalByCategory.push({
+                key: category.key,
+                name: category.name,
+                color: category.color,
+                total: totalNumber,
+                totalFormatted: total.replace('R$', 'R$ '),
+                percent
+              });
+            }
+          });
+        });
+      }
+    }
 
     setTotalByCategories(totalByCategory);
     setIsLoading(false);
