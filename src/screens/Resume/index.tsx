@@ -85,7 +85,7 @@ export function Resume() {
       method: 'GET',
       headers: {
         "cpf": "06350390520",
-        "date": (new Date()).toString()
+        "date": (selectedDate).toString()
       }
     });
     
