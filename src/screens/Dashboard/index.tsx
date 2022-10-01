@@ -126,7 +126,7 @@ export function Dashboard({ navigation, route }) {
         let entries = highlightData.entries.amountNumber;
         let expensives = highlightData.expensives.amountNumber;
         
-        const lastTransaction = new Date();
+        const lastTransaction = new Date(objStatement.createdAt);
         const textDataInOut = `${lastTransaction.getDate()} de ${lastTransaction.toLocaleString('pt-BR', { month: 'long' })}`;
         if(objStatement.type==='negative')  {
           expensives += objStatement.amount;

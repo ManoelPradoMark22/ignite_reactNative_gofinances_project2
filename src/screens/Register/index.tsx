@@ -117,9 +117,7 @@ export function Register() {
         }
       );
 
-      const { message, httpStatusCode, data } = response.data;
-
-      //Alert.alert(`${message}(${httpStatusCode})`);
+      const { data } = response.data;
 
       /*Resetando os campos após o cadastro:*/
       reset();
